@@ -1,7 +1,7 @@
 import base64
 from typing import Optional
 
-from app import app, db
+from application import app, db
 from entity.user import User
 from flask import request
 from util.result import Result
@@ -53,4 +53,6 @@ def login():
         app.logger.info("Wrong password. Expected %s, got %s.", user_pwd, password)
         return Result.fail("密码错误")
 
-    return Result.success("成功登录")
+    app.logger.info(isinstance(user, db.Model))
+
+    return Result.success("成功登录", user)
