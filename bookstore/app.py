@@ -1,3 +1,4 @@
+import traceback
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -18,3 +19,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['SQLALCHEMY_ECHO'] = True
 
 db = SQLAlchemy(app)
+
+
+@app.errorhandler(Exception)
+def _error_handler(error: Exception):
+    app.logger.error(error)
+    app.logger.error(traceback.format_exc())

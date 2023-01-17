@@ -1,56 +1,56 @@
-import json
+import base64
+from typing import Optional
+
 from app import app, db
-from flask import render_template, redirect, jsonify, request
-
-from util.result import Result
 from entity.user import User
+from flask import request
+from util.result import Result
+from util.rsa_decrypt import rsa_decrypt
 
 
-@app.route('/api/auth/register', methods=['POST', 'GET'])
+@app.route('/api/auth/register', methods=['POST'])
 def register():
-    app.logger.info(request.json)
-    username = request.json.get('username')
-    password = request.json.get('password')
-    name = request.json.get("name")
-    phone = request.json.get('phone')
-    email = request.json.get('email')
-    address = request.json.get('address')
+    data: dict = request.json or {}
+    app.logger.info(data)
+    username = data.get('username')
+    password = data.get('password')
+    name = data.get("name")
+    phone = data.get('phone')
+    email = data.get('email')
+    address = data.get('address')
 
-    if username and password:
-        # username_exists = db.session.query(User).filter(User.uname == username).first()
-        username_exists = False
-        if username_exists:
-            return jsonify(Result.fail('用户名已经存在'))
+    if not (username and password):
+        return Result.fail('输入信息不完整')
 
-        user = User(uname=username, pwd=password, name=name, address=address, phone=phone, email=email)
-        app.logger.info(user)
-        db.session.add(user)
-        db.session.commit()
-        return jsonify(Result.success('注册成功'))
+    username_exists = db.session.query(User).filter(User.uname == username).first()
+    if username_exists:
+        return Result.fail('用户名已经存在')
 
-    else:
-        return jsonify(Result.fail('输入信息不完整'))
+    user = User(uname=username, pwd=password, name=name, address=address, phone=phone, email=email)
+    db.session.add(user)
+    db.session.commit()
+    return Result.success('注册成功')
 
 
-@app.route('/api/login', methods=['POST', 'GET'])
+@app.route('/api/auth/login', methods=['POST'])
 def login():
-    if request.method == 'GET':
-        return render_template('login.html')
+    data: dict = request.json or {}
+    username = data.get('username')
+    password = data.get('password')
 
-    username = request.form.get('username')
-    password = request.form.get('password')
+    if not (username and password):
+        return Result.fail('缺少用户名或密码')
 
-    if username:
-        username_exists = db.session.query(User.user_pswd).filter(User.user_id == username).first()
+    user: Optional[User] = db.session.query(User).filter(User.uname == username).first()
 
-        if username_exists:
-            password_one = db.session.query(User.user_pswd).filter(User.user_id == username).first()
-        if password in password_one:
-            return redirect('/index')
-        else:
-            print('111')
-            return render_template('login.html', msg='用户名或密码输入错误')
+    if not user:
+        return Result.fail("用户不存在")
 
-    else:
-        print('222')
-        return render_template('login.html', msg='用户名或密码输入错误')
+    password = rsa_decrypt(base64.b64decode(password))
+    user_pwd = rsa_decrypt(base64.b64decode(user.pwd))
+
+    if user_pwd != password:
+        app.logger.info("Wrong password. Expected %s, got %s.", user_pwd, password)
+        return Result.fail("密码错误")
+
+    return Result.success("成功登录")

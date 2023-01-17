@@ -5,7 +5,7 @@ class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
     uname = db.Column(db.String(64), nullable=False)
-    pwd = db.Column(db.String(64), nullable=False)
+    pwd = db.Column(db.String(256), nullable=False)
     name = db.Column(db.String(64), default='')
     phone = db.Column(db.String(64), default='')
     email = db.Column(db.String(64), default='')
