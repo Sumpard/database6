@@ -6,6 +6,7 @@ import sqlalchemy.ext.declarative
 from entity.user import User
 from entity.comments import Comments
 from entity.book import Book
+import query
 sys.path.append(str(Path(__file__).parent.absolute()))
 
 import controllers.login
@@ -18,4 +19,6 @@ if __name__ == '__main__':
         User.add_data(100)
         Comments.add_data(100)
         Book.add_data()
+        query.Search_union('耶鲁大学','','出版','')
+        query.Search_or('耶鲁大学','吴','出版公司','这本书')
         app.run(debug=True)
