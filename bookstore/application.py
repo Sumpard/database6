@@ -1,7 +1,9 @@
+import logging
 import traceback
+
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm.scoping import scoped_session
 
 app = Flask(__name__)
@@ -18,6 +20,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root@localhost:330
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 # app.config['SQLALCHEMY_ECHO'] = True
+app.logger.setLevel(logging.INFO)
 
 db = SQLAlchemy(app)
 session: scoped_session = db.session
@@ -30,8 +33,9 @@ def _error_handler(error: Exception):
     return "An Error Occurred", 500
 
 
+from datetime import date, datetime
+
 from flask.json import JSONEncoder
-from datetime import datetime, date
 
 
 class CustomJSONEncoder(JSONEncoder):
