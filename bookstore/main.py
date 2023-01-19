@@ -9,5 +9,5 @@ import bookstore.controller
 
 if __name__ == '__main__':
     with app.app_context():
-        # init_all()
+        init_all()
         app.run(debug=True)

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, ForeignKey, Integer, String, Text
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text
 
 from bookstore.application import db
 
@@ -10,7 +10,6 @@ class Comment(db.Model):  # type: ignore
     uname = Column(String(64), ForeignKey("user.uname"))
     bid = Column(Integer, ForeignKey("book.bid"))
     rating = Column(Integer, default=5)
+    time = Column(DateTime)
     content = Column(Text, default="")
-
-    def __repr__(self):
-        return f'<Comment {self.id}>'
+    likes = Column(Integer, default=0)

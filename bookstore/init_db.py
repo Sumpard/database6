@@ -11,13 +11,15 @@ from bookstore.entity.user import User
 N_USERS = 100
 N_BOOKS = 0
 
+from faker import Faker
+
+fake = Faker(["zh_CN"])
+Faker.seed(1919810)
+
 users = []
 
 
 def init_users():
-    from faker import Faker
-    fake = Faker(["zh_CN"])
-    Faker.seed(1919810)
     global users
     users = [
         User(
@@ -65,6 +67,8 @@ def init_comments():
             bid=random.randint(1, N_BOOKS),
             rating=random.randint(1, 5),
             content=random.choice(comments_list),
+            time=fake.date_time_this_decade(before_now=True, after_now=False, tzinfo=None),
+            likes=random.randint(0, 100),
         ) for i in np.random.randint(0, N_USERS, 1000)
     )
     db.session.commit()

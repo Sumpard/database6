@@ -1,7 +1,8 @@
 from flask import request
 
-from bookstore.application import app
+from bookstore.application import app, db
 from bookstore.entity.book import Book
+from bookstore.entity.comment import Comment
 from bookstore.service.book_service import search_and, search_or
 from bookstore.util.paging import paging
 from bookstore.util.result import Result
@@ -21,7 +22,7 @@ def search_books():
         result = paging(search_or, page, per_page)(keyword)
     else:
         result = paging(search_and, page, per_page)(
-            tit=args.get("title", ""),
+            tit=args.get("name", ""),
             auth=args.get("author", ""),
             pub=args.get("publisher", ""),
             abs=args.get("desc", "")
@@ -36,3 +37,18 @@ def search_books():
     }
 
     return Result.success("", result)
+
+
+@app.route('/api/book/b<bid>', methods=['GET'])
+def get_book_detail(bid: str):
+    app.logger.info(type(bid))
+    bid_ = int(bid)
+    book = db.session.query(Book).filter(Book.bid == bid_).first()
+    return Result.success("", book.to_dto())
+
+
+@app.route('/api/book/comments/c<bid>', methods=['GET'])
+def get_comments(bid: str):
+    bid_ = int(bid)
+    comments = db.session.query(Comment).filter(Comment.bid == bid_).all()
+    return Result.success("", comments)
