@@ -1,11 +1,14 @@
 import base64
 from typing import Optional
 
-from application import app, db
-from entity.user import User
 from flask import request
-from util.result import Result
-from util.rsa_decrypt import rsa_decrypt
+
+from bookstore.application import app, db
+from bookstore.entity.user import User
+from bookstore.util.result import Result
+from bookstore.util.rsa_decrypt import rsa_decrypt
+
+app.logger.info("login controller")
 
 
 @app.route('/api/auth/register', methods=['POST'])

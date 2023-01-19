@@ -1,8 +1,10 @@
-from application import db
+from bookstore.application import db
 
 
-class User(db.Model):
+class User(db.Model):  # type: ignore
     __tablename__ = 'user'
+    __table_args__ = {"extend_existing": True}
+
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
     uname = db.Column(db.String(64), nullable=False)
     pwd = db.Column(db.String(256), nullable=False)

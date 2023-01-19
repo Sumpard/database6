@@ -1,12 +1,16 @@
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Iterable
 
 from flask import jsonify
 
-from application import db
+from bookstore.application import db
 
 
 def model2dict(model):
+    if isinstance(model, dict):
+        return model
+    if isinstance(model, Iterable):
+        return [model2dict(item) for item in model]
     resultDict = {}
     for k, v in model.__dict__.items():
         if isinstance(v, list):
@@ -17,7 +21,9 @@ def model2dict(model):
 
 
 def _guarded(data):
-    if isinstance(data, db.Model):
+    if isinstance(data, (int, float, bool, str)):
+        return data
+    if isinstance(data, (db.Model, Iterable)):
         return model2dict(data)
     return data
 
