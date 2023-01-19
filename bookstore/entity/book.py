@@ -1,9 +1,9 @@
-import random
-
-import pandas as pd
+from numpy import average
 from sqlalchemy import Column, Integer, Numeric, String, Text
 
 from bookstore.application import db
+from bookstore.entity.comment import Comment
+from bookstore.util.result import model2dict
 
 
 class Book(db.Model):  # type: ignore
@@ -20,18 +20,10 @@ class Book(db.Model):  # type: ignore
     price = Column(Numeric(10, 2, asdecimal=False))
     originalPrice = Column(Numeric(10, 2, asdecimal=False))
 
-    @staticmethod
-    def init():
-        data = pd.read_csv("book.csv").drop(columns="price")
-        db.session.add_all([
-            Book(
-                **item.to_dict(),
-                price=random.randint(100, 500) / 10,
-                originalPrice=random.randint(300, 800) / 10,
-                publishDate=f"{random.randint(2010, 2020)}年{(random.randint(1,12))}月"
-            ) for _, item in data.iterrows()
-        ])
-        db.session.commit()
-
     def to_dto(self):
-        return self
+        comments = db.session.query(Comment).filter(Comment.bid == self.bid).all()
+        return {
+            **model2dict(self),
+            "rating": average([c.rating for c in comments]),
+            "numComments": len(comments),
+        }

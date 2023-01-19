@@ -3,19 +3,11 @@ import sys
 
 sys.path.append(str(Path(__file__).parent.parent.absolute()))
 
-from bookstore.application import app, db
+from bookstore.application import app
+from bookstore.init_db import init_all
 import bookstore.controller
-
-
-def init():
-    from entity.book import Book
-
-    db.drop_all()
-    db.create_all()
-    Book.init()
-
 
 if __name__ == '__main__':
     with app.app_context():
-        # init()
+        # init_all()
         app.run(debug=True)
