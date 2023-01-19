@@ -6,25 +6,24 @@ from flask import jsonify
 from bookstore.application import db
 
 
-def model2dict(model):
-    if isinstance(model, dict):
-        return model
-    if isinstance(model, Iterable):
-        return [model2dict(item) for item in model]
+def model2dict(model, is_simple: bool = False) -> dict:
     resultDict = {}
-    for k, v in model.__dict__.items():
-        if isinstance(v, list):
-            v = [model2dict(x) for x in v]
-        resultDict[k] = v
+    if is_simple:
+        resultDict = model.__dict__
+    else:
+        for k, v in model.__dict__.items():
+            resultDict[k] = _guarded(v)
     del resultDict['_sa_instance_state']
     return resultDict
 
 
-def _guarded(data):
-    if isinstance(data, (int, float, bool, str)):
+def _guarded(data, is_simple: bool = False):
+    if isinstance(data, db.Model):
+        return model2dict(data, is_simple)
+    if isinstance(data, dict):
         return data
-    if isinstance(data, (db.Model, Iterable)):
-        return model2dict(data)
+    if isinstance(data, list):
+        return [_guarded(item, is_simple) for item in data]
     return data
 
 
