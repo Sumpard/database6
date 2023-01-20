@@ -1,5 +1,5 @@
 from numpy import average
-from sqlalchemy import Column, Integer, Numeric, String, Text
+from sqlalchemy import Column, Date, Integer, Numeric, String, Text
 
 from bookstore.application import db
 from bookstore.entity.comment import Comment
@@ -15,7 +15,7 @@ class Book(db.Model):  # type: ignore
     name = Column(String(255))
     author = Column(String(255))
     publisher = Column(String(255))
-    publishDate = Column(String(32))
+    publishDate = Column(Date)
     desc = Column(Text)
     price = Column(Numeric(10, 2, asdecimal=False))
     originalPrice = Column(Numeric(10, 2, asdecimal=False))

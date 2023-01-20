@@ -61,7 +61,7 @@ def init_books():
             **item.to_dict(),
             price=random.randint(100, 500) / 10,
             originalPrice=random.randint(300, 800) / 10,
-            publishDate=f"{random.randint(2010, 2020)}年{(random.randint(1,12))}月"
+            publishDate=fake.date_this_century(before_today=True, after_today=False),
         ) for _, item in data.iterrows()
     ]
     return books
