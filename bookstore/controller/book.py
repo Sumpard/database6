@@ -45,10 +45,3 @@ def get_book_detail(bid: str):
     bid_ = int(bid)
     book = db.session.query(Book).filter(Book.bid == bid_).first()
     return Result.success("", book.to_dto())
-
-
-@app.route('/api/book/comments/c<bid>', methods=['GET'])
-def get_comments(bid: str):
-    bid_ = int(bid)
-    comments = db.session.query(Comment).filter(Comment.bid == bid_).all()
-    return Result.success("", comments)

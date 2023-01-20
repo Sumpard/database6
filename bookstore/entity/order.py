@@ -26,7 +26,7 @@ class OrderBook(db.Model):
     oid = Column(Integer, ForeignKey('order.id'))
     bid = Column(Integer, ForeignKey('book.bid'))
     price = Column(Numeric(10, 2))
-    book = db.relationship('Book', backref='orders')
+    book = db.relationship('Book', uselist=False)
 
     def to_dto(self):
         dto = model2dict(self)

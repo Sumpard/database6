@@ -1,3 +1,4 @@
+from datetime import datetime
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text
 
 from bookstore.application import db
@@ -10,6 +11,6 @@ class Comment(db.Model):  # type: ignore
     uname = Column(String(64), ForeignKey("user.uname"))
     bid = Column(Integer, ForeignKey("book.bid"))
     rating = Column(Integer, default=5)
-    time = Column(DateTime)
+    post_time = Column(DateTime, default=datetime.now, onupdate=datetime.now)
     content = Column(Text, default="")
     likes = Column(Integer, default=0)

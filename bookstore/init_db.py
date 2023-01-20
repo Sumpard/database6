@@ -12,6 +12,7 @@ from bookstore.entity.book import Book
 from bookstore.entity.comment import Comment
 from bookstore.entity.order import Order, OrderBook
 from bookstore.entity.user import User
+from bookstore.entity.shopping_cart import ShoppingCart
 
 N_USERS = 100
 
@@ -85,10 +86,17 @@ def init_comments():
             bid=random.randint(1, len(books)),
             rating=random.randint(1, 5),
             content=random.choice(comments_list),
-            time=fake.date_time_this_decade(before_now=True, after_now=False, tzinfo=None),
+            post_time=fake.date_time_this_decade(before_now=True, after_now=False, tzinfo=None),
             likes=random.randint(0, 100),
         ) for i in np.random.randint(0, N_USERS, 1000)
     )
+
+
+def init_carts():
+    db.session.add(ShoppingCart(uid=100, bid=books[0].bid, book=books[0]))
+    db.session.commit()
+    sc = db.session.query(ShoppingCart).first()
+    print(sc.book)
 
 
 @initializer
@@ -122,6 +130,7 @@ def init_all():
     init_users()
     init_books()
     init_comments()
+    init_carts()
     init_orders()
 
 
