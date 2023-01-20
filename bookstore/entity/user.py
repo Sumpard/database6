@@ -1,14 +1,15 @@
-from sqlalchemy import Column, ForeignKey, Integer, String, Boolean
+from flask_login import UserMixin
+from sqlalchemy import Column, Integer, String, Boolean
 
 from bookstore.application import db
 
 
-class User(db.Model):  # type: ignore
+class User(db.Model, UserMixin):  # type: ignore
     __tablename__ = 'user'
     __table_args__ = {"extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
-    uname = Column(String(64), nullable=False, index=True)
+    uname = Column(String(64), nullable=False, unique=True, index=True)
     pwd = Column(String(256), nullable=False)
     name = Column(String(64), default='')
     phone = Column(String(64), default='')

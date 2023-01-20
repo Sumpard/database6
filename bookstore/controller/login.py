@@ -1,14 +1,22 @@
 import base64
+from datetime import timedelta
 from typing import Optional
 
 from flask import request
+from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 
 from bookstore.application import app, db
 from bookstore.entity.user import User
 from bookstore.util.result import Result
 from bookstore.util.rsa_decrypt import rsa_decrypt
 
-app.logger.info("login controller")
+login_manager = LoginManager(app)
+
+
+@login_manager.user_loader
+def load_user(id):
+    app.logger.info(f"load user: {id} {User.query.get(int(id))}")
+    return User.query.get(int(id))
 
 
 @app.route('/api/auth/register', methods=['POST'])
@@ -37,6 +45,9 @@ def register():
 
 @app.route('/api/auth/login', methods=['POST'])
 def login():
+    if current_user.is_authenticated:
+        return Result.fail("用户已登录")
+
     data: dict = request.json or {}
     username = data.get('username')
     password = data.get('password')
@@ -56,6 +67,20 @@ def login():
         app.logger.info("Wrong password. Expected %s, got %s.", user_pwd, password)
         return Result.fail("密码错误")
 
-    app.logger.info(isinstance(user, db.Model))
+    # login_user(user, remember=True, duration=timedelta(7))
+    login_user(user)
 
     return Result.success("成功登录", user)
+
+
+@app.route('/api/auth/logout', methods=['GET'])
+@login_required
+def logout():
+    logout_user()
+    return Result.success("成功登出")
+
+
+@app.route('/api/auth', methods=['GET'])
+@login_required
+def authentication():
+    return Result.success("身份认证成功")

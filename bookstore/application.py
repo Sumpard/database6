@@ -1,13 +1,13 @@
 import logging
 import traceback
 
-from flask import Flask
+from flask import Flask, make_response
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm.scoping import scoped_session
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True, origins=["http://localhost:3000"])
 
 app.config['SECRET_KEY'] = 'root'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root@localhost:3306/bookstore'
@@ -49,3 +49,19 @@ class CustomJSONEncoder(JSONEncoder):
 
 
 app.json_encoder = CustomJSONEncoder
+
+
+@app.after_request
+def after(resp):
+    '''
+    被after_request钩子函数装饰过的视图函数
+    ，会在请求得到响应后返回给用户前调用，也就是说，这个时候，
+    请求已经被app.route装饰的函数响应过了，已经形成了response，这个时
+    候我们可以对response进行一些列操作，我们在这个钩子函数中添加headers，所有的url跨域请求都会允许！！！
+    '''
+    resp = make_response(resp)
+    # resp.headers['Access-Control-Allow-Origin'] = 'http://localhost:3000'
+    resp.headers['Access-Control-Allow-Methods'] = 'GET,POST'
+    resp.headers['Access-Control-Allow-Headers'] = 'x-requested-with,content-type'
+    # resp.headers['Access-Control-Allow-Credentials'] = 'true'
+    return resp
