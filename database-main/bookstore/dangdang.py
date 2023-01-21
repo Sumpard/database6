@@ -4,7 +4,7 @@ import csv  # 保存csv表格数据模块 内置模块
 import time  # 时间模块
 
 
-f = open('当当图书.csv', mode='a', encoding='utf-8', newline='')
+f = open('dangdang-new.csv', mode='a', encoding='utf-8', newline='')
 csv_writer = csv.DictWriter(f, fieldnames=[
     '书名',
     '图片',
@@ -20,10 +20,10 @@ csv_writer = csv.DictWriter(f, fieldnames=[
 ])
 csv_writer.writeheader()  # 写入表头
 
-for page in range(1, 26):
+for page in range(1, 501):
     # 字符串格式化方法
     print(f'正在爬取第{page}页的数据内容')
-    time.sleep(0.5)
+    # time.sleep(0.5)
     url = f'http://bang.dangdang.com/books/bestsellers/01.00.00.00.00.00-24hours-0-0-1-{page}'
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36'
