@@ -10,7 +10,7 @@ class Book(db.Model):  # type: ignore
     __tablename__ = 'book'
     __table_args__ = {"extend_existing": True}
 
-    bid = Column(Integer, primary_key=True, nullable=False)
+    bid = Column(Integer, primary_key=True, autoincrement=True)
     cover = Column(String(255))
     name = Column(String(255))
     author = Column(String(255))
@@ -19,6 +19,7 @@ class Book(db.Model):  # type: ignore
     desc = Column(Text)
     price = Column(Numeric(10, 2, asdecimal=False))
     originalPrice = Column(Numeric(10, 2, asdecimal=False))
+    keys = Column(String(256))
 
     def to_dto(self):
         comments = db.session.query(Comment).filter(Comment.bid == self.bid).all()

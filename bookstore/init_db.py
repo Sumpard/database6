@@ -1,9 +1,14 @@
+import json
 import random
 import sys
+from collections import namedtuple
+from datetime import datetime
+from functools import reduce
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from faker import Faker
 
 sys.path.append(str(Path(__file__).parent.parent.absolute()))
 
@@ -11,8 +16,6 @@ from bookstore.application import app, db
 from bookstore.entity import *
 
 N_USERS = 100
-
-from faker import Faker
 
 fake = Faker(["zh_CN"])
 Faker.seed(1919810)
@@ -50,16 +53,47 @@ def init_users():
 
 @initializer
 def init_books():
-    data = pd.read_csv("book.csv").drop(columns="price")
+    data = pd.read_csv("dangdang.csv")
+
+    cates = data["cates"].tolist()
+    root_cate = Category(name="图书")
+    db.session.add(root_cate)
+
+    CateTree = namedtuple("CateTree", ["value", "children"])
+
+    cate_tree = CateTree(root_cate, {})
+
+    for c0 in cates:
+        for c1 in json.loads(c0):
+            x = cate_tree
+            for c2 in c1[1:]:
+                if c2 not in x.children:
+                    cc = Category(parent_id=x.value.id, name=c2, parent=x.value)
+                    x.children[c2] = CateTree(cc, {})
+                    db.session.add(cc)
+                x = x.children[c2]
+
+    db.session.commit()
+
     global books
-    books = [
-        Book(
-            **item.to_dict(),
-            price=random.randint(100, 500) / 10,
-            originalPrice=random.randint(300, 800) / 10,
-            publishDate=fake.date_this_century(before_today=True, after_today=False),
-        ) for _, item in data.iterrows()
-    ]
+    books = []
+    for _, item in data.iterrows():
+        c = json.loads(item["cates"])
+        books.append(
+            Book(
+                name=item["书名"],
+                cover=item["图片"],
+                desc=item["desc"],
+                author=item["作者"],
+                publisher=item["出版社"],
+                price=item["售价"][1 :],
+                originalPrice=item["原价"][1 :],
+                publishDate=datetime.strptime(item["出版日期"], "%Y-%m-%d"),
+                keys=item["keys"],
+                categories=[reduce(lambda x, y: x.children[y], c1[1 :], cate_tree).value for c1 in c],
+            )
+        )
+        # print(_, [cate_tree[c1[-1]].id for c1 in c])
     return books
 
 
@@ -134,4 +168,3 @@ def init_all():
 if __name__ == '__main__':
     with app.app_context():
         init_all()
-        # print(db.session.query(Order).filter(Order.uid==100).first().to_dto())
