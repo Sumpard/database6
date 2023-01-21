@@ -5,8 +5,16 @@ from bookstore.entity import Favorite
 from bookstore.service.book_service import get_book_by_id
 
 
+def get_favorite_by_id(uid: int, bid: int):
+    return db.session.query(Favorite).get({"uid": uid, "bid": bid})
+
+
+def is_in_favorites(uid: int, bid: int):
+    return get_favorite_by_id(uid, bid) is not None
+
+
 def add_book_to_favorites(uid: int, bid: int, delay_commit: bool = False):
-    ac = db.session.query(Favorite).get({"uid": uid, "bid": bid})
+    ac = get_favorite_by_id(uid, bid)
     if ac:
         return None
     else:

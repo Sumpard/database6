@@ -1,9 +1,10 @@
 from flask import request
+from flask_login import current_user
 
 from bookstore.application import app, db
 from bookstore.entity.book import Book
-from bookstore.entity.comment import Comment
 from bookstore.service.book_service import search_and, search_or
+from bookstore.service.favorite_service import is_in_favorites
 from bookstore.util.paging import paging
 from bookstore.util.result import Result
 
@@ -35,13 +36,16 @@ def search_books():
         "total": result.total,  # 总记录数
         "pageSize": result.per_page,  # 每页记录数
     }
+    if current_user.is_authenticated:  # type: ignore
+        uid = current_user.id  # type: ignore
+        for i in result["items"]:
+            i["favorite"] = is_in_favorites(uid, i["bid"])
 
     return Result.success("", result)
 
 
 @app.route('/api/book/b<bid>', methods=['GET'])
 def get_book_detail(bid: str):
-    app.logger.info(type(bid))
     bid_ = int(bid)
     book = db.session.query(Book).filter(Book.bid == bid_).first()
     return Result.success("", book.to_dto())
