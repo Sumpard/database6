@@ -46,7 +46,8 @@ def register():
 @app.route('/api/auth/login', methods=['POST'])
 def login():
     if current_user.is_authenticated:
-        return Result.fail("用户已登录")
+        # return Result.fail("用户已登录")
+        logout_user()
 
     data: dict = request.json or {}
     username = data.get('username')
@@ -67,8 +68,8 @@ def login():
         app.logger.info("Wrong password. Expected %s, got %s.", user_pwd, password)
         return Result.fail("密码错误")
 
-    # login_user(user, remember=True, duration=timedelta(7))
-    login_user(user)
+    login_user(user, remember=True, duration=timedelta(7))
+    # login_user(user)
 
     return Result.success("成功登录", user)
 

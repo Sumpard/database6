@@ -8,11 +8,7 @@ import pandas as pd
 sys.path.append(str(Path(__file__).parent.parent.absolute()))
 
 from bookstore.application import app, db
-from bookstore.entity.book import Book
-from bookstore.entity.comment import Comment
-from bookstore.entity.order import Order, OrderBook
-from bookstore.entity.user import User
-from bookstore.entity.shopping_cart import ShoppingCart
+from bookstore.entity import *
 
 N_USERS = 100
 
