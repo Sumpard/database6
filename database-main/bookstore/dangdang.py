@@ -5,26 +5,29 @@ import time  # 时间模块
 
 
 f = open('dangdang-new.csv', mode='a', encoding='utf-8', newline='')
-csv_writer = csv.DictWriter(f, fieldnames=[
-    '书名',
-    '图片',
-    '评论数',
-    '推荐量',
-    '作者',
-    '出版社',
-    '售价',
-    '原价',
-    '折扣',
-    '电子书价格',
-    '详情页',
-])
+csv_writer = csv.DictWriter(
+    f, fieldnames=[
+        '书名',
+        '图片',
+        '评论数',
+        '推荐量',
+        '作者',
+        '出版日期',
+        '出版社',
+        '售价',
+        '原价',
+        '折扣',
+        '电子书价格',
+        '详情页',
+    ]
+)
 csv_writer.writeheader()  # 写入表头
 
-for page in range(1, 501):
+for page in range(1, 51):
     # 字符串格式化方法
     print(f'正在爬取第{page}页的数据内容')
     # time.sleep(0.5)
-    url = f'http://bang.dangdang.com/books/bestsellers/01.00.00.00.00.00-24hours-0-0-1-{page}'
+    url = f'http://bang.dangdang.com/books/bestsellers/01.00.00.00.00.00-recent30-0-0-1-{page}'
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36'
     }
@@ -43,6 +46,7 @@ for page in range(1, 501):
             '.star .tuijian::text').get().replace('推荐', '')  # 推荐
         author = li.css(
             '.publisher_info a:nth-child(1)::attr(title)').get()  # 作者
+        publishDate = li.css('div:nth-child(6) span::text').get()
         publish = li.css('div:nth-child(6) a::text').get()  # 出版社
         #date = li.css('.publisher_info > span')
         price_n = li.css('.price .price_n::text').get()  # 售价
@@ -56,6 +60,7 @@ for page in range(1, 501):
             '评论数': comment,
             '推荐量': recommend,
             '作者': author,
+            '出版日期': publishDate,
             '出版社': publish,
             '售价': price_n,
             '原价': price_r,
