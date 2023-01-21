@@ -110,6 +110,7 @@ def init_orders():
                 bid=book.bid,
                 book=book,
                 price=random.choice([book.price, book.originalPrice]),
+                count=random.randint(1, 3),
             ) for book in chosen_books
         ]
         orders.append(
@@ -117,7 +118,7 @@ def init_orders():
                 uid=user.id,
                 create_time=fake.date_time_this_decade(before_now=True, after_now=False, tzinfo=None),
                 address=fake.address(),
-                price=sum(b.price for b in ordered_books),
+                payment=sum(b.price * b.count for b in ordered_books),
                 items=ordered_books,
             )
         )
