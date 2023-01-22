@@ -9,6 +9,7 @@ from sqlalchemy.orm.scoping import scoped_session
 app = Flask(__name__)
 CORS(app, supports_credentials=True, origins=["http://localhost:3000"])
 
+app.config['JSON_AS_ASCII'] = False
 app.config['SECRET_KEY'] = 'root'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root@localhost:3306/bookstore'
 # 协议：mysql+pymysql

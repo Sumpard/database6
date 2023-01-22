@@ -17,6 +17,10 @@ def model2dict(model, is_simple: bool = False) -> dict:
     return resultDict
 
 
+def modellist2dict(model_list, is_simple: bool = False) -> list:
+    return [_guarded(item, is_simple) for item in model_list]
+
+
 def _guarded(data, is_simple: bool = False):
     if isinstance(data, db.Model):
         return model2dict(data, is_simple)

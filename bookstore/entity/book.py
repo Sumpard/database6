@@ -1,3 +1,4 @@
+import json
 from numpy import average
 from sqlalchemy import Column, Date, Integer, Numeric, String, Text
 
@@ -23,8 +24,10 @@ class Book(db.Model):  # type: ignore
 
     def to_dto(self):
         comments = db.session.query(Comment).filter(Comment.bid == self.bid).all()
-        return {
+        dto = {
             **model2dict(self),
             "rating": average([c.rating for c in comments]),
             "numComments": len(comments),
         }
+        dto["keys"] = json.loads(self.keys)  # type: ignore
+        return dto

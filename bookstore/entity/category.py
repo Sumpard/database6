@@ -16,3 +16,18 @@ class Category(db.Model):  # type: ignore
     parent_id = Column(Integer, ForeignKey('category.id'))
     parent = db.relationship('Category', backref='children', remote_side=[id])
     book = db.relationship('Book', backref='categories', secondary=_middle)
+
+    def to_dto(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "parent_id": self.parent_id,
+            "children_id": [c.id for c in self.children],
+        }
+
+    def expand_dto(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "children": list(map(Category.expand_dto, self.children)),
+        }
