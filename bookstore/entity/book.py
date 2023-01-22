@@ -24,10 +24,13 @@ class Book(db.Model):  # type: ignore
 
     def to_dto(self):
         comments = db.session.query(Comment).filter(Comment.bid == self.bid).all()
+        numComments = len(comments)
+        rating = average([c.rating for c in comments]) if numComments > 0 else None
         dto = {
             **model2dict(self),
-            "rating": average([c.rating for c in comments]),
-            "numComments": len(comments),
+            "rating": rating,
+            "numComments": numComments,
         }
-        dto["keys"] = json.loads(self.keys)  # type: ignore
+        keys = json.loads(self.keys)  # type: ignore
+        dto["keys"] = dict(k.split("：") for k in keys)
         return dto
