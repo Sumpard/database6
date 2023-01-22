@@ -1,3 +1,4 @@
+from typing import List
 from sqlalchemy import Column, ForeignKey, Integer, String
 
 from bookstore.application import db
@@ -31,3 +32,6 @@ class Category(db.Model):  # type: ignore
             "name": self.name,
             "children": list(map(Category.expand_dto, self.children)),
         }
+
+    def get_descendants(self) -> List[int]:
+        return sum((c.get_descendants() for c in self.children), []) + [self.id]
