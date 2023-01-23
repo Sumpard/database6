@@ -1,5 +1,5 @@
 from .book import Book
-from .category import Category
+from .category import Category, CategoryBook
 from .comment import Comment
 from .favorite import Favorite
 from .order import Order, OrderBook

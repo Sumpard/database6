@@ -3,7 +3,7 @@ from sqlalchemy import Column, ForeignKey, Integer, String
 
 from bookstore.application import db
 
-_middle = db.Table(
+CategoryBook = db.Table(
     "category_book",
     Column('category_id', Integer, ForeignKey('category.id'), primary_key=True),
     Column('book_id', Integer, ForeignKey('book.bid'), primary_key=True),
@@ -16,7 +16,7 @@ class Category(db.Model):  # type: ignore
     name = Column(String(64))
     parent_id = Column(Integer, ForeignKey('category.id'))
     parent = db.relationship('Category', backref='children', remote_side=[id])
-    book = db.relationship('Book', backref='categories', secondary=_middle)
+    book = db.relationship('Book', backref='categories', secondary=CategoryBook)
 
     def to_dto(self):
         return {
@@ -35,3 +35,6 @@ class Category(db.Model):  # type: ignore
 
     def get_descendants(self) -> List[int]:
         return sum((c.get_descendants() for c in self.children), []) + [self.id]
+
+    def get_books_of_category(self):
+        return list(self.book) + sum((c.get_books_of_category() for c in self.children), [])

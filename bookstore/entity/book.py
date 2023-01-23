@@ -1,5 +1,4 @@
 import json
-from numpy import average
 from sqlalchemy import Column, Date, Integer, Numeric, String, Text
 
 from bookstore.application import db
@@ -25,7 +24,7 @@ class Book(db.Model):  # type: ignore
     def to_dto(self):
         comments = db.session.query(Comment).filter(Comment.bid == self.bid).all()
         numComments = len(comments)
-        rating = average([c.rating for c in comments]) if numComments > 0 else None
+        rating = sum(c.rating for c in comments) / numComments if numComments > 0 else None
         dto = {
             **model2dict(self),
             "rating": rating,
