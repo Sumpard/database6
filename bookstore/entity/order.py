@@ -8,10 +8,10 @@ class Order(db.Model):
     __tablename__ = 'order'
     id = Column(Integer, primary_key=True, autoincrement=True)
     uid = Column(Integer, ForeignKey('user.id'))
-    create_time = Column(DateTime, default=datetime.now, onupdate=datetime.now)
-    address = Column(String(255), default='')
-    state = Column(Integer, default=0)
-    payment = Column(Numeric(10, 2))
+    create_time = Column(DateTime, default=datetime.now, onupdate=datetime.now)  # 创建日期
+    address = Column(String(255), default='')  # 配送地址
+    state = Column(Integer, default=0)  # 状态，0表示未付款，1表示已付款
+    payment = Column(Numeric(10, 2))  # 应付金额
     items = db.relationship('OrderBook', cascade="all,delete")
 
     def to_dto(self):
@@ -25,8 +25,8 @@ class OrderBook(db.Model):
     __tablename__ = 'order_book'
     oid = Column(Integer, ForeignKey('order.id'), primary_key=True)
     bid = Column(Integer, ForeignKey('book.bid'), primary_key=True)
-    price = Column(Numeric(10, 2))
-    count = Column(Integer)
+    price = Column(Numeric(10, 2))  # 购买单价
+    count = Column(Integer)  # 数量
     book = db.relationship('Book', uselist=False)
 
     def to_dto(self):

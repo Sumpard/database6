@@ -13,10 +13,10 @@ CategoryBook = db.Table(
 class Category(db.Model):  # type: ignore
     __tablename__ = 'category'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(64))
-    parent_id = Column(Integer, ForeignKey('category.id'))
-    parent = db.relationship('Category', backref='children', remote_side=[id])
-    book = db.relationship('Book', backref='categories', secondary=CategoryBook)
+    name = Column(String(64))  # 名称，如“小说”
+    parent_id = Column(Integer, ForeignKey('category.id'))  # 父分类的id
+    parent = db.relationship('Category', backref='children', remote_side=[id])  # 父分类
+    book = db.relationship('Book', backref='categories', secondary=CategoryBook)  # 该分类下的书
 
     def to_dto(self):
         return {

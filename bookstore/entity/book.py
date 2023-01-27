@@ -11,15 +11,15 @@ class Book(db.Model):  # type: ignore
     __table_args__ = {"extend_existing": True}
 
     bid = Column(Integer, primary_key=True, autoincrement=True)
-    cover = Column(String(255))
-    name = Column(String(255))
-    author = Column(String(255))
-    publisher = Column(String(255))
-    publishDate = Column(Date)
-    desc = Column(Text)
-    price = Column(Numeric(10, 2, asdecimal=False))
-    originalPrice = Column(Numeric(10, 2, asdecimal=False))
-    keys = Column(String(256))
+    cover = Column(String(255))  # 封面图片url
+    name = Column(String(255))  # 书名/商品名
+    author = Column(String(255))  # 作者
+    publisher = Column(String(255))  # 出版社
+    publishDate = Column(Date)  # 出版日期
+    desc = Column(Text)  # 描述
+    price = Column(Numeric(10, 2, asdecimal=False))  # 价格
+    originalPrice = Column(Numeric(10, 2, asdecimal=False))  # 原价
+    keys = Column(String(256))  # 关键词，如开本、页数
 
     def to_dto(self):
         comments = db.session.query(Comment).filter(Comment.bid == self.bid).all()
