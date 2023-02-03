@@ -89,11 +89,11 @@ def init_books():
                 price=item["售价"][1 :],
                 originalPrice=item["原价"][1 :],
                 publishDate=datetime.strptime(item["出版日期"], "%Y-%m-%d"),
+                quantity=random.randint(1, 100),
                 keys=item["keys"],
                 categories=[reduce(lambda x, y: x.children[y], c1[1 :], cate_tree).value for c1 in c],
             )
         )
-        # print(_, [cate_tree[c1[-1]].id for c1 in c])
     return books
 
 
@@ -114,19 +114,17 @@ def init_comments():
             uid=users[i].id,  # type: ignore
             uname=users[i].uname,  # type: ignore
             bid=random.randint(1, len(books)),
-            rating=random.randint(1, 5),
+            rating=random.randint(3, 5),
             content=random.choice(comments_list),
             post_time=fake.date_time_this_decade(before_now=True, after_now=False, tzinfo=None),
             likes=random.randint(0, 100),
-        ) for i in np.random.randint(0, N_USERS, 1000)
+        ) for i in np.random.randint(0, N_USERS,
+                                     len(books) * 5)
     )
 
 
 def init_carts():
-    db.session.add(ShoppingCart(uid=100, bid=books[0].bid, book=books[0]))
-    db.session.commit()
-    sc = db.session.query(ShoppingCart).first()
-    print(sc.book)
+    ...
 
 
 @initializer

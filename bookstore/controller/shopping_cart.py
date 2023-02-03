@@ -5,7 +5,7 @@ from bookstore.application import app, db
 from bookstore.entity.shopping_cart import ShoppingCart
 from bookstore.service.book_service import get_book_by_id
 from bookstore.service.favorite_service import add_book_to_favorites
-from bookstore.service.shopping_cart_service import add_book_to_cart, remove_cart_books_by_bid
+from bookstore.service.shopping_cart_service import add_book_to_cart, get_cart_book_by_bid, remove_cart_books_by_bid
 from bookstore.util.result import Result
 
 
@@ -23,6 +23,10 @@ def add_to_cart():
     uid = current_user.id  # type: ignore
     bid = request.json["bid"]  # type: ignore
     count = request.json["count"]  # type: ignore
+
+    book = get_book_by_id(bid)
+    if book.quantity < count:
+        return Result.fail(f"库存不足！库存只有{book.quantity}本，但是您想要{count}本")
 
     ac = add_book_to_cart(uid, bid, count)
     if not ac:
@@ -53,3 +57,22 @@ def move_items_to_favorites():
     remove_cart_books_by_bid(uid, bids)
 
     return Result.success("成功将物品移入收藏夹")
+
+
+@app.route('/api/shopping_cart/update', methods=['POST'])
+@login_required
+def update_item_count():
+    uid = current_user.id  # type: ignore
+    bid = request.json["bid"]  # type: ignore
+    count = request.json["count"]  # type: ignore
+
+    book = get_book_by_id(bid)
+    if book.quantity < count:
+        return Result.fail("库存不足！")
+
+    item = get_cart_book_by_bid(uid, bid)
+    item.count = count
+
+    db.session.commit()
+
+    return Result.success("")

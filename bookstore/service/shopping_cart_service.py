@@ -5,8 +5,12 @@ from bookstore.entity import ShoppingCart
 from bookstore.service.book_service import get_book_by_id
 
 
+def get_cart_book_by_bid(uid: int, bid: int):
+    return db.session.query(ShoppingCart).get({"uid": uid, "bid": bid})
+
+
 def add_book_to_cart(uid: int, bid: int, count: int = 1, allow_stack: bool = True, delay_commit: bool = False):
-    ac = db.session.query(ShoppingCart).get({"uid": uid, "bid": bid})
+    ac = get_cart_book_by_bid(uid, bid)
     if ac:
         if not allow_stack:
             return None

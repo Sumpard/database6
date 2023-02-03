@@ -32,6 +32,10 @@ def create_order():
     # 从购物车删除
     remove_cart_books_by_bid(uid, bids)
 
+    # 更新数量
+    for i in items:
+        i.book.quantity -= i.count
+
     db.session.commit()
 
     return Result.success("成功创建订单")

@@ -19,6 +19,7 @@ class Book(db.Model):  # type: ignore
     desc = Column(Text)  # 描述
     price = Column(Numeric(10, 2, asdecimal=False))  # 价格
     originalPrice = Column(Numeric(10, 2, asdecimal=False))  # 原价
+    quantity = Column(Integer)
     keys = Column(String(256))  # 关键词，如开本、页数
 
     def to_dto(self):
